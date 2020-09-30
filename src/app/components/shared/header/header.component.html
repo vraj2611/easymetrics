@@ -1,0 +1,10 @@
+<input type="file" #inputFile (change)="selecionarArquivo($event)" style="display:none">
+<mat-toolbar color="primary">
+    <span>EasyMetrics</span>
+    <span style="flex: 1 1 auto;"></span>
+    <button mat-raised-button="mat-raised-button" (click)="inputFile.click()" class="btn_acao">
+        <i class="material-icons">add</i>
+        Importar
+    </button>
+</mat-toolbar>
+

@@ -1,0 +1,29 @@
+<ng-container *ngIf="dados$ | async as dados">
+
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{dados.length}}
+                Linhas
+            </mat-panel-title>
+            <span style="flex: 1 1 auto;"></span>
+            <div>
+                <input matInput (keyup)="filtrar($event.target.value)" placeholder="Buscar Referência">
+            </div>
+        </mat-expansion-panel-header>
+        <div class="mat-elevation-z8">
+            <table mat-table [dataSource]="dataSource" matSort style="width: 100%;">
+
+                <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> {{column}} </th>
+                    <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;">
+                </tr>
+            </table>
+            <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"></mat-paginator>
+        </div>
+    </mat-expansion-panel>
+</ng-container>

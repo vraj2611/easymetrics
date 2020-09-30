@@ -1,0 +1,80 @@
+<mat-expansion-panel>
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            <span *ngIf="coluna.tipo == 'Numero'" style="background-color: green;" matTooltip="Número">N</span>
+            <span *ngIf="coluna.tipo == 'String'" style="background-color: blue;" matTooltip="String">S</span>
+            &nbsp;{{coluna.nome}} 
+            <span style="flex: 1 1 auto;"></span>
+            {{coluna.status}}
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div>
+        <mat-form-field class="example-form-field">
+            <mat-label>Filtrar Valores</mat-label>
+            <input matInput type="text" (keyup)="filtrar($event.target.value)">
+        </mat-form-field>
+        <span style="flex: 1 1 auto;"></span>
+        <span style="float:right">
+            <button mat-raised-button (click)="setGrupo()" *ngIf="!grupoAtivo()">Agrupar</button>&nbsp;
+            <button mat-raised-button (click)="setVariavel()" *ngIf="!variavelAtivo()">Variavel</button>&nbsp;
+            <button mat-raised-button (click)="setMetrica()" *ngIf="!metricaAtivo()">Métrica</button>&nbsp;
+            <button mat-raised-button (click)="setStatusNulo()" *ngIf="!semStatus()">Remover {{coluna.status}}</button>
+        </span>
+        
+
+
+    </div>
+    <div *ngIf="grupos$ | async as grupo">
+        <table mat-table matSort *ngIf="grupo.length > 0" [dataSource]="dataSource" class="mat-elevation-z2" style="width:100%;">
+
+            <ng-container matColumnDef="valor">
+                <th mat-header-cell *matHeaderCellDef  mat-sort-header>Valor</th>
+                <td mat-cell *matCellDef="let row"> {{row.valor}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantidade">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Qtde</th>
+                <td mat-cell *matCellDef="let row"> {{row.quantidade}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="outliers">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Outliers</th>
+                <td mat-cell *matCellDef="let row"> {{row.outliers}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="media">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Média</th>
+                <td mat-cell *matCellDef="let row"> {{row.media}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="coef_var">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Coef. Var</th>
+                <td mat-cell *matCellDef="let row"> {{row.coef_var}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="min">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Min</th>
+                <td mat-cell *matCellDef="let row"> {{row.min}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="max">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Max</th>
+                <td mat-cell *matCellDef="let row"> {{row.max}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="filtrar">
+                <th mat-header-cell *matHeaderCellDef> Filtrar </th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button class="btn_acao">
+                        <mat-icon>search</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+
+    </div>
+</mat-expansion-panel>
