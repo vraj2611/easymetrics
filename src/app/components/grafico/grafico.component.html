@@ -1,0 +1,8 @@
+<div class="example-box">
+    <div class="chart-container" *ngIf="grafico$ | async as graf">
+        <canvas baseChart [datasets]="graf.ChartData" [options]="graf.ChartOptions" [colors]="graf.ChartColors"
+            [legend]="graf.ChartLegend" [chartType]="graf.ChartType" (chartClick)="chartClicked($event)">
+        </canvas>
+    </div>
+
+</div>

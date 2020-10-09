@@ -2,8 +2,12 @@
 <mat-toolbar color="primary">
     <span>EasyMetrics</span>
     <span style="flex: 1 1 auto;"></span>
+    <button mat-raised-button="mat-raised-button" (click)="salvar()" class="btn_acao">
+        <i class="material-icons">cloud_download</i>
+        Salvar
+    </button>
     <button mat-raised-button="mat-raised-button" (click)="inputFile.click()" class="btn_acao">
-        <i class="material-icons">add</i>
+        <i class="material-icons">backup</i>
         Importar
     </button>
 </mat-toolbar>

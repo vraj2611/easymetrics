@@ -6,34 +6,37 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HeaderComponent } from './components/shared/header/header.component';
 import { MaterialDesignModule } from './components/materialdesign.module';
-import { ExcelService } from './services/excel.service';
-import { ColunasdadosComponent } from './components/colunasdados/colunasdados.component';
-import { GraficodadosComponent } from './components/graficodados/graficodados.component';
-import { TabeladadosComponent } from './components/tabeladados/tabeladados.component';
-import { ColunasDetalheComponent } from './components/colunasdados/colunasdetalhe/colunasdetalhe.component';
-import { DadosService } from './services/dados.service';
-import { AnaliseService } from './services/analise.service';
+import { ImportacaoService } from './services/importacao.service';
+import { AppService } from './services/app.service';
+import { ChartsModule } from 'ng2-charts';
+import { ColunasComponent } from './components/colunas/colunas.component';
+import { GruposComponent } from './components/grupos/grupos.component';
+import { GraficoComponent } from './components/grafico/grafico.component';
+import { FiltrosComponent } from './components/filtros/filtros.component';
 import { GraficoService } from './services/grafico.service';
+import { OutliersComponent } from './components/outliers/outliers.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    ColunasdadosComponent,
-    ColunasDetalheComponent,
-    GraficodadosComponent,
-    TabeladadosComponent
+    ColunasComponent,
+    GruposComponent,
+    GraficoComponent,
+    FiltrosComponent,
+    OutliersComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MaterialDesignModule
+    MaterialDesignModule,
+    ChartsModule
   ],
   providers: [
-    ExcelService,
-    DadosService,
-    AnaliseService,
+    ImportacaoService,
+    AppService,
     GraficoService
   ],
   bootstrap: [AppComponent]

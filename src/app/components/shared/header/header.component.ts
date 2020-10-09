@@ -1,26 +1,27 @@
-import { Component, OnInit } from '@angular/core';
-import { ExcelService } from 'src/app/services/excel.service';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ImportacaoService } from 'src/app/services/importacao.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  styleUrls: ['./header.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent{
 
+  importado:boolean = false
   constructor(
-    private excel:ExcelService
+    private serv:ImportacaoService
   ) { }
 
-  ngOnInit(): void {
-  }
-
-  clickOnHidden() {
-    console.log("ok")
-  }
-
+  
   selecionarArquivo(event) {
-    this.excel.importar(event);
+    this.serv.importar(event);
+    this.importado = true;
+  }
+
+  salvar(){
+    this.serv.salvar();
   }
 
 

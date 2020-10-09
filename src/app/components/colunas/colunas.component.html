@@ -1,0 +1,26 @@
+<div *ngIf="colunas$ | async as colunas"  class="mat-elevation-z2">
+    <div>
+        <span>{{colunas.length}} Colunas</span>
+        <span style="flex: 1 1 auto"></span>
+        <span style="float: right;">
+            <input type="text" (keyup)="setFiltro($event.target.value)" placeholder="Filtrar Colunas">
+        </span>
+       
+    </div>
+    <table matSort (matSortChange)="setSort($event)">
+        <tr>
+            <th mat-sort-header="tipo">Tipo</th>
+            <th mat-sort-header="nome">Coluna</th>
+            <th mat-sort-header="distintos">Qtde</th>
+            <th mat-sort-header="maior_var">Var%</th>
+            <th mat-sort-header="status">Status</th>
+        </tr>
+        <tr *ngFor="let col of cols_ordenadas">
+            <td>{{col.tipo}}</td>
+            <td (click)="selecionarColuna(col.nome)" style="cursor:pointer">{{col.nome}}</td>
+            <td>{{col.distintos}}</td>
+            <td>{{col.maior_var}}</td>
+            <td>{{col.status}}</td>
+        </tr>
+    </table>
+</div>

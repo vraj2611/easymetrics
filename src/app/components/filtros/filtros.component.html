@@ -1,0 +1,17 @@
+<div>Filtros ativos</div>
+<div>
+    <mat-chip-list *ngIf="filtros$ | async">
+        <span>Incluir:</span>
+        <mat-chip *ngFor="let f of inclusoes" style="background-color: rgb(200,250,200)" removable
+            (removed)="removeFiltro(f)">
+            {{f.coluna}}: {{f.grupo}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+        <span>Excluir:</span>
+        <mat-chip *ngFor="let f of exclusoes" style="background-color: rgb(255,200,200)" removable
+            (removed)="removeFiltro(f)">
+            {{f.coluna}}: {{f.grupo}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+    </mat-chip-list>
+</div>

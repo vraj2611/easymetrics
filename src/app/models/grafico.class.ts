@@ -1,7 +1,5 @@
 import { ChartDataSets, ChartOptions } from 'chart.js';
 import { Color } from 'ng2-charts';
-import { IReferencia } from 'src/app/models';
-import { IEstatistica } from 'src/app/services';
 
 export class Grafico {
 
@@ -13,7 +11,7 @@ export class Grafico {
     responsive: true
   };
 
-  setChartOptions(min_data:Date): void {
+  setChartOptions(min: number, max:number): void {
     this.ChartOptions = {
       animation: { duration: 0 },
       responsive: true,
@@ -21,8 +19,7 @@ export class Grafico {
       legend: {position: 'bottom'},
       scales: {
         xAxes: [{
-          type: 'time',
-          ticks: { max: new Date(), min: new Date(min_data.getFullYear(), min_data.getMonth() -1, 1)}
+          // type: 'num
         }],
         yAxes: [
           {}
@@ -56,13 +53,13 @@ export class Grafico {
     }
   ];
 
-  converterDados(refs: IReferencia[]) {
+  converterDados(refs: any[]) {
     return refs.map((r, i) => {
       return {
-        x: r.data_origem,
-        y: r.valor_atual,
+        x: r.x,
+        y: r.y,
         r: 8,
-        t: r.data_origem,
+        t: r.t,
         d: JSON.stringify({
           'id': r.id,
           'tag': r.tag,
@@ -76,50 +73,51 @@ export class Grafico {
     return this._dataSets[datasetIndex].data[pointIndex];
   }
 
-  getDataSets(refs: IReferencia[], estatistica: IEstatistica): ChartDataSets[] {
+  getDataSets(refs: any[], estatistica: any): ChartDataSets[] {
     this.setDataSets(refs, estatistica);
     return this._dataSets;
   }
 
-  setDataSets(refs: IReferencia[], estatistica: IEstatistica): void {
-    this.setChartOptions(estatistica.menor_data);
+  setDataSets(refs: any[], estatistica: any): void {
+    console.log(this.converterDados(refs));
+    this.setChartOptions(estatistica.min, estatistica.max);
     this._dataSets = [
       {
-        data: this.converterDados(refs.filter(r => r.status == "incluso")),
+        data: this.converterDados(refs),
         label: 'Inclusos',
         backgroundColor: 'green',
         borderColor: 'blue',
         hoverBackgroundColor: 'purple',
         hoverBorderColor: 'red'
       },
-      {
-        data: this.converterDados(refs.filter(r => r.status == "excluido")),
-        label: 'Excluidos',
-        backgroundColor: 'red',
-        borderColor: 'blue',
-        hoverBackgroundColor: 'purple',
-        hoverBorderColor: 'red',
-      },
-      {
-        data: this.converterDados(refs.filter(r => r.status == "antigo")),
-        label: 'Antigo',
-        backgroundColor: 'grey',
-        borderColor: 'blue',
-        hoverBackgroundColor: 'purple',
-        hoverBorderColor: 'red',
-      },
-      {
-        data: this.converterDados(refs.filter(r => r.status == "novo")),
-        label: 'Novo',
-        backgroundColor: 'yellow',
-        borderColor: 'blue',
-        hoverBackgroundColor: 'purple',
-        hoverBorderColor: 'red',
-      },
+      // {
+      //   data: this.converterDados(refs.filter(r => r.status == "excluido")),
+      //   label: 'Excluidos',
+      //   backgroundColor: 'red',
+      //   borderColor: 'blue',
+      //   hoverBackgroundColor: 'purple',
+      //   hoverBorderColor: 'red',
+      // },
+      // {
+      //   data: this.converterDados(refs.filter(r => r.status == "antigo")),
+      //   label: 'Antigo',
+      //   backgroundColor: 'grey',
+      //   borderColor: 'blue',
+      //   hoverBackgroundColor: 'purple',
+      //   hoverBorderColor: 'red',
+      // },
+      // {
+      //   data: this.converterDados(refs.filter(r => r.status == "novo")),
+      //   label: 'Novo',
+      //   backgroundColor: 'yellow',
+      //   borderColor: 'blue',
+      //   hoverBackgroundColor: 'purple',
+      //   hoverBorderColor: 'red',
+      // },
       {
         data: [
-          { x: estatistica.menor_data, y: estatistica.media },
-          { x: estatistica.maior_data, y: estatistica.media },
+          { x: estatistica.min, y: estatistica.media },
+          { x: estatistica.max, y: estatistica.media },
         ],
         label: 'Media',
         backgroundColor: 'rgba(0,0,0,0)',
@@ -130,8 +128,8 @@ export class Grafico {
       },
       {
         data: [
-          { x: estatistica.menor_data, y: estatistica.media + estatistica.desviopadrao },
-          { x: estatistica.maior_data, y: estatistica.media + estatistica.desviopadrao },
+          { x: estatistica.min, y: estatistica.media + estatistica.desviopadrao },
+          { x: estatistica.max, y: estatistica.media + estatistica.desviopadrao },
         ],
         label: '+DesvPad',
         backgroundColor: 'rgba(0,0,0,0)',
@@ -142,8 +140,8 @@ export class Grafico {
       },
       {
         data: [
-          { x: estatistica.maior_data, y: estatistica.media - estatistica.desviopadrao },
-          { x: estatistica.menor_data, y: estatistica.media - estatistica.desviopadrao },
+          { x: estatistica.max, y: estatistica.media - estatistica.desviopadrao },
+          { x: estatistica.min, y: estatistica.media - estatistica.desviopadrao },
         ],
         label: '-DesvPad',
         backgroundColor: 'rgba(0,0,0,0)',

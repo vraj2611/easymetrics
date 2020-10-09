@@ -8,19 +8,20 @@ export class TabelaGenerica {
 
   displayedColumns: string[];
   dataSource: MatTableDataSource<any>;
-  //@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-  //@ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  @Input() titulo: string = "Tabela de Itens";
+  @Input() dados: any[] = [];
+  @Input() isBlocked: boolean = false;
 
-  @ViewChild(MatSort, { static: false })
-  set sort(v: MatSort) {
-   this.dataSource.sort = v;
+  ngOnChanges(changes) {
+    if (!changes.dados) return;
+    let lista = changes.dados.currentValue;
+    if (!lista) return;
+    this.atualizarRows(lista);
   }
 
-  @ViewChild(MatPaginator, { static: false })
-  set paginator(v: MatPaginator) {
-    this.dataSource.paginator = v;
-  }
-
+  
   atualizarRows(lista) {
     this.dataSource = new MatTableDataSource(lista.map(this.tratarRow));
     this.dataSource.paginator = this.paginator;
@@ -34,12 +35,12 @@ export class TabelaGenerica {
     }
   }
 
-  tratarRow(row):any {
+  tratarRow(row) {
     return row;
   }
 
   exportarDados() {
-    let data:Object[] = [].map(this.tratarRow);
+    let data:Object[] = this.dados.map(this.tratarRow);
     let csv = '';
     console.log(data);
     csv += Object.keys(data[0]).join(';');
@@ -53,7 +54,7 @@ export class TabelaGenerica {
     let hiddenElement = document.createElement('a');
     hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
     hiddenElement.target = '_blank';
-    hiddenElement.download = "Arquivo".toLocaleLowerCase().replace(' ','_')+'.csv';
+    hiddenElement.download = this.titulo.toLocaleLowerCase().replace(' ','_')+'.csv';
     hiddenElement.click();
   }
 }

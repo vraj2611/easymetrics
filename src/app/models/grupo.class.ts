@@ -1,4 +1,4 @@
-import { IAnalise } from '../services/analise.service';
+import { Analise } from './analise.class';
 
 export class Grupo {
 
@@ -10,13 +10,15 @@ export class Grupo {
     minimo: number;
     maximo: number;
     coef_var: number;
-    analise: IAnalise;
+    analise: Analise;
+    filtro: number;
 
     constructor(nome:string, coluna:string){
         this.coluna = coluna;
         this.nome = nome;
         this.ids = new Set();
         this.outliers = new Set();
+        this.filtro = 0;
     }
 
     addId(id:number){
@@ -30,5 +32,5 @@ export class Grupo {
     removeOutlier(id:number){
         this.outliers.delete(id)
     }
-
+    
 }

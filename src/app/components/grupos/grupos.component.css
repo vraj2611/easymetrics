@@ -1,0 +1,31 @@
+.container-table {
+    max-height: 150px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+}
+
+th {
+    position: sticky;
+    top: 0;
+    background-color: lightgray;
+}
+
+.th1 {
+    left:0;
+    z-index: 999;
+}
+
+.coluna1 {
+    position: sticky;
+    left: 0;
+    background-color: white;
+}
+
+.btn_filtro {
+    color: grey;
+}
+
+.btn_block {
+    color: lightsalmon;
+}

@@ -7,7 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialogModule } from '@angular/material/dialog'; 
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -24,7 +24,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatButtonToggleModule } from '@angular/material/button-toggle'
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatChipsModule } from '@angular/material/chips';
+
 @NgModule({
   declarations: [],
   imports: [
@@ -54,7 +56,8 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle'
     MatBadgeModule,
     MatDialogModule,
     MatProgressSpinnerModule,
-    MatButtonToggleModule
+    DragDropModule,
+    MatChipsModule
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
@@ -84,7 +87,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle'
     MatBadgeModule,
     MatDialogModule,
     MatProgressSpinnerModule,
-    MatButtonToggleModule
-  ]
+    DragDropModule,
+    MatChipsModule]
 })
 export class MaterialDesignModule { }
