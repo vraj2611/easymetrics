@@ -102,6 +102,5 @@ export class GruposComponent {
 
   setColunaStatus(status){
     this.serv.setStatus(this.coluna, status)
-    console.log("");
   }
 }
