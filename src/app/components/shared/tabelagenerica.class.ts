@@ -42,7 +42,6 @@ export class TabelaGenerica {
   exportarDados() {
     let data:Object[] = this.dados.map(this.tratarRow);
     let csv = '';
-    console.log(data);
     csv += Object.keys(data[0]).join(';');
     csv += "\n";
     

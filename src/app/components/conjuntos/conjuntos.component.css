@@ -6,9 +6,12 @@
 }
 
 th {
+    background-color: white;
     position: sticky;
     top: 0;
-    background-color: lightgray;
+    border-color: gray;
+    border-style: ridge;
+    border-width: 2px 0px 2px 0px;
 }
 
 .th1 {
@@ -20,6 +23,9 @@ th {
     position: sticky;
     left: 0;
     background-color: white;
+    border-color: gray;
+    border-style: ridge;
+    border-width: 0px 2px 0px 0px;
 }
 
 .btn_filtro {

@@ -2,25 +2,27 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { BaseDados, IFiltro } from '../models/basedados.class';
 import { Coluna, Status } from '../models/coluna.class';
-import { Grupo } from '../models/grupo.class';
+import { Conjunto } from '../models/conjunto.class';
+import { GraficoService } from './grafico.service';
+
 
 @Injectable({
 	providedIn: 'root'
 })
 export class AppService {
 	private _colunas = new BehaviorSubject<Coluna[]>(null);
-	private _grupos = new BehaviorSubject<Grupo[]>(null);
+	private _conjuntos = new BehaviorSubject<Conjunto[]>(null);
 	private _base: BaseDados;
 	private _colunaSelecionada: string;
 	private _filtros = new BehaviorSubject<IFiltro[]>(null);
 
-	constructor() {}
+	constructor(private grafServ:GraficoService) {}
 
 	getRelatorio(){
 		return {
 			dados: this._base.getRegistros(),
 			colunas: this._base.getColunas(),
-			grupos: this._base.getGrupos()
+			grupos: this._base.getConjuntos()
 		}
 	}
 
@@ -32,12 +34,12 @@ export class AppService {
 		return this._base.getColunas();
 	}
 
-	grupos$() {
-		return this._grupos.asObservable();
+	conjuntos$() {
+		return this._conjuntos.asObservable();
 	}
 
-	getGrupos(coluna:string = null){
-		return this._base.getGrupos(coluna);
+	getConjuntos(coluna:string = null){
+		return this._base.getConjuntos(coluna);
 	}
 
 	filtros$(){
@@ -50,23 +52,36 @@ export class AppService {
 
 	carregar(dados: any[]) {
 		this._base = new BaseDados(dados);
-		this._colunas.next(this._base.getColunas());
+		let colunas = this._base.getColunas()
+		this._colunas.next(colunas);
+		this.grafServ.plotEspalhamentoColunas();	
 	}
 
 	selecionarColuna(coluna:string){
 		this._colunaSelecionada = coluna;
-		console.log(this.getColunaSelecionada());
-		this._grupos.next(this._base.getGrupos(coluna))
+		this._conjuntos.next(this._base.getConjuntos(coluna))
 	}
 
 	setStatus(nome_coluna: string, status: Status) {
+		console.log(nome_coluna, status);
 		this._base.setStatus(nome_coluna, status);
-		this._colunas.next(this._base.getColunas());
+		let colunas = this._base.getColunas();
+		this._colunas.next(colunas);
+		let ds = this._base.getDatasets();
+		if(ds.length > 0){
+			console.log(ds)
+			this.grafServ.plotDados(ds);
+		}	
 	}
 
 	setFiltro(filtro: IFiltro){
 		let filtros = this._base.setFiltro(filtro);
 		this._filtros.next(filtros);
+		let ds = this._base.getDatasets();
+		if(ds.length > 0){
+			console.log(ds)
+			this.grafServ.plotDados(ds);
+		}
 	}
 	// plotarEspalhamentoColuna(){
 	

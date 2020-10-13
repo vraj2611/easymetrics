@@ -1,6 +1,6 @@
 import { Analise } from './analise.class'
 import { Coluna, Status } from './coluna.class'
-import { Grupo } from './grupo.class'
+import { Conjunto } from './conjunto.class'
 
 export interface IRegistro {
     _id: number;
@@ -10,55 +10,70 @@ export interface IRegistro {
 }
 
 export interface IFiltro {
-    grupo: string;
+    conjunto: string;
     coluna: string;
     filtro: number;
+}
+
+export interface IDataset {
+    label: string;
+    xs: number[];
+    ys: number[];
 }
 
 export class BaseDados {
 
     private _registros: IRegistro[]
     private _colunas: Coluna[]
-    private _grupos: Grupo[]
+    private _conjuntos: Conjunto[]
+    private _datasets: IDataset[]
 
     constructor(dados: any[]) {
         this._colunas = [];
-        this._grupos = [];
+        this._conjuntos = [];
         this._registros = [];
+        this._datasets = [];
         this.carregar(dados);
         for (const c of this._colunas) {
             c.tipo = this.definirTipoColuna(c.nome)
         }
-        this.calcularGrupos();
+        this.calcularConjuntos();
     }
 
     getColunas() {
         return this._colunas.slice();
     }
 
-    getGrupos(coluna:string = null) {
-        if(!coluna) return this._grupos.slice();
-        return this._grupos.filter(g=> g.coluna == coluna);
+    getConjuntos(coluna: string = null) {
+        if (!coluna) return this._conjuntos.slice();
+        return this._conjuntos.filter(g => g.coluna == coluna);
     }
 
-    getRegistros(){
+    getRegistros() {
         return this._registros.slice();
     }
 
-    combinarColunas(coluna1:string, coluna2:string){
+    getDatasets(){
+        return this._datasets.slice();
+    }
+
+    combinarColunas(coluna1: string, coluna2: string) {
 
     }
 
-    segmentarNumeros(coluna:string, limites_sup:number[]){
+    segmentarNumeros(coluna: string, limites_sup: number[]) {
 
     }
 
     setStatus(nome_coluna: string, status: Status) {
         for (const c of this._colunas) {
-            if (c.status == status) c.status = Status.NULO
-            if (c.nome == nome_coluna) c.status = status
+            if (c.nome == nome_coluna){
+                c.status = (c.status == status) ? Status.NULO : status
+            } else {
+                if (c.status == status) c.status = Status.NULO
+            }
         }
-        this.calcularGrupos();
+        this.calcularConjuntos();
     }
 
     private getColuna(nome: string): Coluna {
@@ -75,37 +90,37 @@ export class BaseDados {
     }
 
     private definirTipoColuna(coluna: string): string {
-        let grupos_col = this._grupos.filter(g => g.coluna == coluna);
+        let grupos_col = this._conjuntos.filter(g => g.coluna == coluna);
         let nums = grupos_col.filter(g => g.nome == '_numeros')
         if (nums.length > 0) return 'Numero';
         let strs = grupos_col.filter(g => g.nome != '_numeros')
         if (strs.length > 0) return 'String';
     }
 
-    private getGrupo(nome: string, coluna: string): Grupo {
-        let id_grupo = ''
+    private getConjunto(nome: string, coluna: string): Conjunto {
+        let id_conj = ''
         if (nome.length == 0) {
-            id_grupo = '_vazios'
+            id_conj = '_vazios'
         } else {
-            id_grupo = isNaN(+nome) ? nome : '_numeros'
+            id_conj = isNaN(+nome) ? nome : '_numeros'
         }
-        let grupo = this._grupos.find(g => {
+        let conj = this._conjuntos.find(g => {
             if (g.coluna != coluna) return false
-            if (g.nome != id_grupo) return false
+            if (g.nome != id_conj) return false
             return true
         })
-        if (grupo) return grupo
-        grupo = new Grupo(id_grupo, coluna);
-        this._grupos.push(grupo)
-        return grupo
+        if (conj) return conj
+        conj = new Conjunto(id_conj, coluna);
+        this._conjuntos.push(conj)
+        return conj
     }
 
     private carregar(dados: IRegistro[]) {
         dados.map((reg, index) => {
             for (const key in reg) {
                 let col = this.getColuna(key);
-                let grupo = this.getGrupo(reg[key], col.nome)
-                grupo.addId(index)
+                let conj = this.getConjunto(reg[key], col.nome)
+                conj.addId(index)
             }
             reg._id = index
             reg._filtro = true;
@@ -123,12 +138,12 @@ export class BaseDados {
             c.menorqtde = 999;
             c.maiorvar = 0;
             c.menorvar = 999;
-            let gcol = this._grupos.filter(g => g.coluna == c.nome)
+            let gcol = this._conjuntos.filter(g => g.coluna == c.nome)
             gcol.map(g => {
                 let q = g.ids.size;
                 c.maiorqtde = (q > c.maiorqtde) ? q : c.maiorqtde;
                 c.menorqtde = (q < c.menorqtde) ? q : c.menorqtde;
-                if (q > 1 && g.analise) {
+                if ((q > 1) && g.analise?.y?.coef_var) {
                     let v = Math.round(100 * g.analise.y.coef_var);
                     if (v > 0) {
                         c.maiorvar = (v > c.maiorvar) ? v : c.maiorvar;
@@ -141,68 +156,85 @@ export class BaseDados {
         }
     }
 
-    private calcularGrupos(ids: number[] = null) {
-        let c_metr = this._colunas.find(c => c.status == Status.METRICA);
-        let c_var = this._colunas.find(c => c.status == Status.VARIAVEL);
+    private calcularConjuntos(ids: number[] = null) {
+        let col_metr = this._colunas.find(c => c.status == Status.METRICA);
+        let col_var = this._colunas.find(c => c.status == Status.VARIAVEL);
+        let col_grupo = this._colunas.find(c => c.status == Status.GRUPO);
         const fnFiltrar = this.getFuncaoFiltrar();
-        for (const g of this._grupos) {
-            let ids = [...g.ids].filter(fnFiltrar)
-            if (c_metr) {
-                let ys = this.getValores(c_metr.nome, ids)
-                let xs = c_var ? this.getValores(c_var.nome, ids) : null;
-                g.analise = new Analise(ys, xs);
-            } else if (g.nome == '_numeros') {
-                let ys = this.getValores(g.coluna, ids)
-                g.analise = new Analise(ys, null);
+        const datasets: IDataset[] = [];
+        for (const conj of this._conjuntos) {
+            let ids = [...conj.ids].filter(fnFiltrar)
+            if (col_metr) {
+                let ys = this.getValores(col_metr.nome, ids)
+                let xs = col_var ? this.getValores(col_var.nome, ids) : null;
+                conj.analise = new Analise(ys, xs);
+                if (col_grupo && (conj.coluna == col_grupo.nome)) {
+                    datasets.push({
+                        label: conj.nome,
+                        xs: xs,
+                        ys: ys
+                    })
+                }
+                if (!col_grupo && (conj.coluna == col_metr.nome)) {
+                    datasets.push({
+                        label: conj.nome,
+                        xs: xs,
+                        ys: ys
+                    })
+                }
+
+            } else if (conj.nome == '_numeros') {
+                let ys = this.getValores(conj.coluna, ids)
+                conj.analise = new Analise(ys, null);
             }
         }
         this.calcularColunas();
+        this._datasets = datasets;
+
     }
 
     toogleOutlier(id: number) {
         for (const reg of this._registros) {
             if (reg._id == id) reg._outlier = !reg._outlier
-		}
-        this.calcularGrupos([id]);
+        }
+        this.calcularConjuntos([id]);
     }
 
-    setFiltro(f:IFiltro):IFiltro[]{
-        for (const g of this._grupos) {
-            if (f.grupo == g.nome && f.coluna == g.coluna) g.filtro = f.filtro
+    setFiltro(f: IFiltro): IFiltro[] {
+        for (const x of this._conjuntos) {
+            if (f.conjunto == x.nome && f.coluna == x.coluna) x.filtro = f.filtro
         }
-        this.calcularGrupos();
+        this.calcularConjuntos();
         return this.getFiltros();
     }
 
-    getFiltros():IFiltro[]{
-        const filtrados = this._grupos.filter(g=>g.filtro != 0)
-        return filtrados.map(f=>{
+    getFiltros(): IFiltro[] {
+        const filtrados = this._conjuntos.filter(x => x.filtro != 0)
+        return filtrados.map(f => {
             return {
-                grupo: f.nome,
+                conjunto: f.nome,
                 coluna: f.coluna,
                 filtro: f.filtro
             }
         })
     }
 
-    getFuncaoFiltrar(){
+    private getFuncaoFiltrar() {
         let incluir = new Set<number>();
-        let outliers = this._registros.filter(r=>r._outlier).map(r=>r._id);
+        let outliers = this._registros.filter(r => r._outlier).map(r => r._id);
         let excluir = new Set<number>(outliers);
-        for( const g of this._grupos){
+        for (const g of this._conjuntos) {
             if (g.filtro > 0) for (const id of g.ids) incluir.add(id)
             if (g.filtro < 0) for (const id of g.ids) excluir.add(id)
         }
-        console.log("incluir", Array.from(incluir))
-        console.log("excluir", Array.from(excluir))
-        if (incluir.size > 0 && excluir.size > 0){
-            return function(id:number) { return incluir.has(id) && !excluir.has(id) }
-        } else if (incluir.size > 0){
-            return function(id:number) { return incluir.has(id)}
-        } else if (excluir.size > 0){
-            return function(id:number) { return !excluir.has(id)}
+        if (incluir.size > 0 && excluir.size > 0) {
+            return function (id: number) { return incluir.has(id) && !excluir.has(id) }
+        } else if (incluir.size > 0) {
+            return function (id: number) { return incluir.has(id) }
+        } else if (excluir.size > 0) {
+            return function (id: number) { return !excluir.has(id) }
         }
-        return function(id:number) { return true}
+        return function (id: number) { return true }
     }
 
 }

@@ -1,11 +1,16 @@
 <div *ngIf="grupos$ | async as grupos" class="mat-elevation-z2" style="margin: 3px; padding: 3px;">
     <div style="display: flex; justify-content: space-between; font-weight:bolder;">
+        <span>{{coluna}}</span>
+        <span>
+            <button (click)="setColunaStatusGrupo()">Grp</button>
+            <button (click)="setColunaStatusVariavel()">Var</button>
+            <button (click)="setColunaStatusMetrica()">Metr</button>
+        </span>
+    </div>
+    <div style="display: flex; justify-content: space-between; font-weight:bolder;">
         <span *ngIf="filtro?.length > 0">{{filtrados}} de&nbsp;</span>
-        <span>{{grupos.length}} Grupos em {{coluna}}</span>
+        <span>{{grupos.length}} Grupos</span>
         <span style="flex: 1 1 auto;"></span>
-        <button (click)="setColunaStatus('Grupo')">Grp</button>
-        <button (click)="setColunaStatus('Variável')">Var</button>
-        <button (click)="setColunaStatus('Métrica')">Metr</button>
         <span>
             <input type="text" (keyup)="setFiltro($event.target.value)" placeholder="Filtrar Grupos" style="max-width: 100px;">
         </span>
@@ -29,10 +34,10 @@
                     <td>{{grp.media}}</td>
                     <td>{{grp.coef_var}}</td>
                     <td>
-                        <span (click)="setGrupoFiltro(grp, 1)" class="btn_filtro">
+                        <span (click)="setConjuntoFiltro(grp, 1)" class="btn_filtro">
                             <mat-icon style="font-size: 18px; cursor:pointer">filter_alt</mat-icon>
                         </span>
-                        <span (click)="setGrupoFiltro(grp, -1)">
+                        <span (click)="setConjuntoFiltro(grp, -1)">
                             <mat-icon style="font-size: 18px; cursor:pointer" class="btn_block">block</mat-icon>
                         </span>
                     </td>

@@ -1,6 +1,6 @@
 import { Analise } from './analise.class';
 
-export class Grupo {
+export class Conjunto {
 
     coluna: string;
     nome: string;

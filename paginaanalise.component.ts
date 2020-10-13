@@ -34,7 +34,6 @@ export class PaginaanaliseComponent extends GestaoEntidade<Especificacao>{
     this.referencias$ = this.serv.referencias$().pipe(map(r=>{
       if(!r) return r;
       this.estatistica = this.serv.getEstatistiscas();
-      console.log(this.estatistica);
       this.ChartData = this.graf.getDataSets(r, this.estatistica);
       return r;
     }));

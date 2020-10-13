@@ -1,22 +1,36 @@
-import { ChartDataSets, ChartOptions } from 'chart.js';
+import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color } from 'ng2-charts';
+
+export interface IGrafico {
+  datasets;
+  options: ChartOptions;
+  legend: boolean;
+  chartType: ChartType;
+  labels?: string[];
+  colors?: any;
+
+}
+
+
 
 export class Grafico {
 
-  public ChartLegend = true;
-  public ChartType = 'bubble';
+  //{ ChartOptions, ChartLegend, ChartData, ChartType, ChartColors }
+  public ChartLegend: boolean = true;
+  public ChartType: string = 'bubble';
+  public ChartData: any;
   private _dataSets: ChartDataSets[] = null;
   public ChartOptions: ChartOptions = {
     animation: { duration: 0 },
     responsive: true
   };
 
-  setChartOptions(min: number, max:number): void {
+  setChartOptions(min: number, max: number): void {
     this.ChartOptions = {
       animation: { duration: 0 },
       responsive: true,
       maintainAspectRatio: false,
-      legend: {position: 'bottom'},
+      legend: { position: 'bottom' },
       scales: {
         xAxes: [{
           // type: 'num
@@ -38,18 +52,8 @@ export class Grafico {
 
   public bubbleChartColors: Color[] = [
     {
-      backgroundColor: [
-        'red',
-        'green',
-        'blue',
-        'purple',
-        'yellow',
-        'brown',
-        'magenta',
-        'cyan',
-        'orange',
-        'pink'
-      ]
+      backgroundColor: ['red', 'green', 'blue', 'purple', 'yellow', 'brown', 'magenta',
+        'cyan', 'orange', 'pink']
     }
   ];
 

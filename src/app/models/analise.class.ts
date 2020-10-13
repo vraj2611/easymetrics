@@ -20,6 +20,7 @@ export class Analise {
     }
 
     constructor(valores_y: number[], valores_x: number[] = null) {
+        if(valores_y.length < 2) return 
         this.y = this.calcularDispersao(valores_y);
         if (valores_x) {
             this.x = this.calcularDispersao(valores_x);
