@@ -9,7 +9,7 @@ th {
     background-color: white;
     position: sticky;
     top: 0;
-    border-color: lightgray;
+    border-color: gray;
     border-style: ridge;
     border-width: 2px 0px 2px 0px;
 }

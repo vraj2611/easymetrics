@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { IFiltro } from 'src/app/models/basedados.class';
+import { IFiltro } from 'src/app/models/baseconjuntos.class';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({

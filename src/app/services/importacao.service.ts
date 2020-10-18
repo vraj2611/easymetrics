@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import * as xlsx from 'xlsx';
 import { AppService } from './app.service';
 @Injectable({
@@ -6,9 +7,16 @@ import { AppService } from './app.service';
 })
 export class ImportacaoService {
 
+  private _arquivoCarregado = new BehaviorSubject<string>(null)
+  private filename = '';
+
   constructor(
     private appServ:AppService
-  ) { }
+  ) {}
+
+  arquivoCarregado$(){
+    return this._arquivoCarregado.asObservable()
+  }
 
   async salvar(){
     let dados = this.appServ.getRelatorio();
@@ -32,8 +40,10 @@ export class ImportacaoService {
       const wsname: string = wb.SheetNames[0];
       const ws: xlsx.WorkSheet = wb.Sheets[wsname];
       let data = xlsx.utils.sheet_to_json(ws);
-      this.appServ.carregar(data)
+      this.appServ.carregar(data);
+      this._arquivoCarregado.next(this.filename);
     };
+    this.filename = target.files[0].name
     reader.readAsBinaryString(target.files[0]);
   }
 }

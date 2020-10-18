@@ -1,22 +1,24 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { BaseDados, IFiltro } from '../models/basedados.class';
-import { Coluna, Status } from '../models/coluna.class';
-import { Conjunto } from '../models/conjunto.class';
-import { GraficoService } from './grafico.service';
-
+import { BaseDados, IRegistro } from '../models/basedados.class';
+import { Coluna, Status } from '../models/basecolunas.class';
+import { Conjunto, IFiltro } from '../models/baseconjuntos.class';
+import { Grafico, IGrafico } from '../models/grafico.class';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class AppService {
-	private _colunas = new BehaviorSubject<Coluna[]>(null);
-	private _conjuntos = new BehaviorSubject<Conjunto[]>(null);
 	private _base: BaseDados;
 	private _colunaSelecionada: string;
+	private _colunas = new BehaviorSubject<Coluna[]>(null);
+	private _conjuntos = new BehaviorSubject<Conjunto[]>(null);
 	private _filtros = new BehaviorSubject<IFiltro[]>(null);
+	private _outliers = new BehaviorSubject<IRegistro[]>(null);
+	private _grafico = new BehaviorSubject<IGrafico>(null);
+	private _subgrafconj = new BehaviorSubject<IGrafico>(null);
 
-	constructor(private grafServ:GraficoService) {}
+	constructor() {}
 
 	getRelatorio(){
 		return {
@@ -46,6 +48,18 @@ export class AppService {
 		return this._filtros.asObservable();
 	}
 
+	outliers$(){
+		return this._outliers.asObservable();
+	}
+
+	grafico$(){
+		return this._grafico.asObservable();
+	}
+
+	subGraficoConjunto$(){
+		return this._subgrafconj.asObservable();
+	}
+
 	getColunaSelecionada(){
 		return this._colunaSelecionada;
 	}
@@ -54,7 +68,7 @@ export class AppService {
 		this._base = new BaseDados(dados);
 		let colunas = this._base.getColunas()
 		this._colunas.next(colunas);
-		this.grafServ.plotEspalhamentoColunas();	
+		//this.grafServ.plotEspalhamentoColunas();	
 	}
 
 	selecionarColuna(coluna:string){
@@ -63,14 +77,13 @@ export class AppService {
 	}
 
 	setStatus(nome_coluna: string, status: Status) {
-		console.log(nome_coluna, status);
 		this._base.setStatus(nome_coluna, status);
 		let colunas = this._base.getColunas();
 		this._colunas.next(colunas);
 		let ds = this._base.getDatasets();
 		if(ds.length > 0){
-			console.log(ds)
-			this.grafServ.plotDados(ds);
+			let graf = Grafico.createBubbleChart(ds);
+        	this._grafico.next(graf)
 		}	
 	}
 
@@ -79,46 +92,33 @@ export class AppService {
 		this._filtros.next(filtros);
 		let ds = this._base.getDatasets();
 		if(ds.length > 0){
-			console.log(ds)
-			this.grafServ.plotDados(ds);
+			let graf = Grafico.createBubbleChart(ds);
+        	this._grafico.next(graf)
 		}
 	}
-	// plotarEspalhamentoColuna(){
-	
-	// }
 
-	// plotarGrafico(col_x, col_y, col_cor = null, grupo_filtro = null) {
-	// 	let ys = this.getValoresColunas(col_y)
-	// 	let xs = this.getValoresColunas(col_x)
-	// 	let analise = this.aServ.getAnalise(ys, xs)
-	// 	let estatistica = {
-	// 		min: analise.x.min,
-	// 		max: analise.x.max,
-	// 		media: analise.y.media,
-	// 		desviopadrao: analise.y.desviopadrao
-	// 	}
-	// 	let tam = 2
-	// 	let itens = xs.map((x, index) => {
-	// 		return {
-	// 			x: x,
-	// 			y: ys[index],
-	// 			t: tam,
-	// 			tag: 'tag' + x,
-	// 			id: index
-	// 		}
-	// 	})
-	
-	// }
+	toogleOutlier(id: number) {
+		let outliers = this._base.toogleOutlier(id);
+		this._outliers.next(outliers);
+		this._colunas.next(this._base.getColunas());
+		this._conjuntos.next(this._base.getConjuntos());
+	}
 
-	// toogleOutlier(id: number) {
-	// 	let novo = this._dados.value.map(reg => {
-	// 		if (reg._id != id) return reg
-	// 		reg._outlier = !reg._outlier
-	// 		return reg
-	// 	})
-	// 	this._dados.next(novo);
-	// 	this.calcularGrupos([id]);
-	// }
+	clickPontoGrafico(datasetindex:number, index:number){
+		let id = this._base.getIdFromPonto(datasetindex, index);
+		this.toogleOutlier(id);
+	}
+
+	toogleExibir(coluna:string){
+		this._base.toogleExibir(coluna);
+		let outliers = this._base.getOutliers();
+		this._outliers.next(outliers);
+		let ds = this._base.getDatasets();
+		if(ds.length > 0){
+			let graf = Grafico.createBubbleChart(ds);
+        	this._grafico.next(graf)
+		}
+	}
 
 
 }

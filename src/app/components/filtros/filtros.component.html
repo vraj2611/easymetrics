@@ -1,16 +1,14 @@
-<div>Filtros ativos</div>
-<div>
-    <mat-chip-list *ngIf="filtros$ | async">
-        <span>Incluir:</span>
+<div *ngIf="filtros$ | async" style="padding: 5px;">
+    <mat-chip-list>
+        <span style="font-weight: bolder;">Filtros:</span>
         <mat-chip *ngFor="let f of inclusoes" style="background-color: rgb(200,250,200);" removable
             (removed)="removeFiltro(f)">
-            <div class="textchip" [matTooltip]="f.coluna+': '+f.grupo"> {{f.coluna}}: {{f.grupo}} </div>
+            <div class="textchip" [matTooltip]="f.coluna+': '+f.conjunto"> {{f.coluna}}: {{f.conjunto}} </div>
             <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
-        <span>Excluir:</span>
         <mat-chip *ngFor="let f of exclusoes" style="background-color: rgb(255,200,200);" removable
             (removed)="removeFiltro(f)">
-            <div class="textchip"> {{f.coluna}}: {{f.grupo}} </div>
+            <div class="textchip" [matTooltip]="f.coluna+': '+f.conjunto"> {{f.coluna}}: {{f.conjunto}} </div>
             <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
     </mat-chip-list>

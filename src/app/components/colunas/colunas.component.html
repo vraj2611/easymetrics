@@ -1,26 +1,68 @@
-<div *ngIf="colunas$ | async as colunas"  class="mat-elevation-z2">
+<div *ngIf="colunas$ | async as colunas" class="mat-elevation-z2" style="margin: 3px; padding: 3px;">
     <div>
-        <span>{{colunas.length}} Colunas</span>
+        <span style="font-weight:bolder;" *ngIf="filtro?.length > 0">{{linhas_tabela.length}} de&nbsp;</span>
+        <span style="font-weight:bolder;">{{colunas.length}} Colunas</span>
         <span style="flex: 1 1 auto"></span>
         <span style="float: right;">
             <input type="text" (keyup)="setFiltro($event.target.value)" placeholder="Filtrar Colunas">
         </span>
        
     </div>
-    <table matSort (matSortChange)="setSort($event)">
-        <tr>
-            <th mat-sort-header="tipo">Tipo</th>
-            <th mat-sort-header="nome">Coluna</th>
-            <th mat-sort-header="distintos">Qtde</th>
-            <th mat-sort-header="maior_var">Var%</th>
-            <th mat-sort-header="status">Status</th>
-        </tr>
-        <tr *ngFor="let col of cols_ordenadas">
-            <td>{{col.tipo}}</td>
-            <td (click)="selecionarColuna(col.nome)" style="cursor:pointer">{{col.nome}}</td>
-            <td>{{col.distintos}}</td>
-            <td>{{col.maiorvar}}</td>
-            <td>{{col.status}}</td>
-        </tr>
-    </table>
+    <div class="container-table">
+        <table matSort (matSortChange)="setSort($event)">
+            <tr>
+                <th mat-sort-header="tipo"></th>
+                <th mat-sort-header="nome">Coluna</th>
+                <th>Ver</th>
+                <th mat-sort-header="distintos">Conjs.</th>
+                <th mat-sort-header="maior_var">Var%</th>
+                <th mat-sort-header="status">Status</th>
+            </tr>
+            <tr *ngFor="let col of linhas_tabela">
+                <td>
+                    <span *ngIf="col.tipo == 'Numero'" style="background-color: blue; color: white; font-weight: bolder;">&nbsp;N&nbsp;</span>
+                    <span *ngIf="col.tipo == 'String'" style="background-color: green; color: white; font-weight: bolder;">&nbsp;S&nbsp;</span>
+                </td>
+                <td (click)="selecionarColuna(col.nome)" style="cursor:pointer">{{col.nome}}</td>
+                <td>
+                    <span *ngIf="col.exibir" (click)="setColunaVisivel(col)" matTooltip="Visulizar Coluna no Tooltip" style="color: red;; font-weight: bolder; cursor: pointer;">Sim</span>
+                    <span *ngIf="!col.exibir" (click)="setColunaVisivel(col)" matTooltip="Visulizar Coluna no Tooltip" style="color: lightgray; font-weight: bolder; cursor: pointer;">Não</span>
+                </td>
+                <td>{{col.distintos}}</td>
+                <td>{{col.maiorvar}}</td>
+                <td style="align-items: center;">
+                    <ng-container *ngIf="col.tipo == 'String'">
+                        <span *ngIf="col.status != 'Grupo'" matTooltip="Cor" 
+                        (click)="setColunaStatusGrupo(col)"
+                        style="color: lightgray;  font-weight: bolder; cursor: pointer;">
+                            Grp</span>
+                        <span *ngIf="col.status == 'Grupo'" matTooltip="Cor"
+                        (click)="setColunaStatusGrupo(col)"
+                        style="color: red; font-weight: bolder; cursor: pointer;">
+                            Grp</span>
+                    </ng-container>
+                    <ng-container *ngIf="col.tipo == 'Numero'">
+                        <span *ngIf="col.status != 'Variavel'" matTooltip="Distribuir no Eixo X"
+                        (click)="setColunaStatusVariavel(col)"
+                        style="color: lightgray; font-weight: bolder; cursor: pointer;">
+                            X</span>
+                        <span *ngIf="col.status == 'Variavel'" matTooltip="Distribuir no Eixo X"
+                        (click)="setColunaStatusVariavel(col)"
+                        style="color: red; font-weight: bolder; cursor: pointer;">
+                            X</span>
+                        &nbsp;
+                        <span *ngIf="col.status != 'Metrica'" matTooltip="Distribuir no Eixo Y"
+                        (click)="setColunaStatusMetrica(col)"
+                        style="color: lightgray; font-weight: bolder; cursor: pointer;">
+                            Y</span>
+                        <span *ngIf="col.status == 'Metrica'" matTooltip="Distribuir no Eixo Y"
+                        (click)="setColunaStatusMetrica(col)"
+                        style="color: red; font-weight: bolder; cursor: pointer;">
+                            Y</span>
+                    </ng-container>
+                </td>
+            </tr>
+        </table>
+    </div>
+    
 </div>

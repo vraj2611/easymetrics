@@ -1,11 +1,23 @@
-<div class="example-box">
-    <div class="chart-container" *ngIf="grafico$ | async as graf">
-        <canvas *ngIf="graf.chartType == 'bar'" baseChart [datasets]="graf.datasets" [options]="graf.options"
-            [legend]="graf.legend" [chartType]="graf.chartType" [labels]="graf.labels" (chartClick)="chartClicked($event)">
-        </canvas>
-        <canvas *ngIf="graf.chartType == 'bubble'" baseChart [datasets]="graf.datasets" [options]="graf.options"
+<div *ngIf="grafico$ | async as graf">
+    <canvas *ngIf="graf.chartType == 'bar'" baseChart [datasets]="graf.datasets" [options]="graf.options" width="400" height="400"
+        [legend]="graf.legend" [chartType]="graf.chartType" [labels]="graf.labels" (chartClick)="chartClicked($event)">
+    </canvas>
+    <div *ngIf="graf.chartType == 'bubble'">
+        <span>
+            Eixo X:&nbsp;
+            <input type="text" (keyup)="setXmin($event.target.value)" placeholder="Xmin" style="max-width: 50px;">
+            ~
+            <input type="text" (keyup)="setXmax($event.target.value)" placeholder="Xmax" style="max-width: 50px;">
+            &nbsp;&nbsp;&nbsp;Eixo Y:&nbsp;
+            <input type="text" (keyup)="setYmin($event.target.value)" placeholder="Ymin" style="max-width: 50px;">
+            ~
+            <input type="text" (keyup)="setYmax($event.target.value)" placeholder="Ymax" style="max-width: 50px;">
+            <span (click)="resizeGrafico()"><mat-icon>refresh</mat-icon></span>&nbsp;
+            
+        </span>
+        <canvas baseChart [datasets]="graf.datasets" [options]="graf.options" width="400" height="400"
         [legend]="graf.legend" [chartType]="graf.chartType" [colors]="graf.colors" (chartClick)="chartClicked($event)">
     </canvas>
     </div>
-
+    
 </div>

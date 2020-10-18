@@ -12,9 +12,10 @@ import { ChartsModule } from 'ng2-charts';
 import { ColunasComponent } from './components/colunas/colunas.component';
 import { GraficoComponent } from './components/grafico/grafico.component';
 import { FiltrosComponent } from './components/filtros/filtros.component';
-import { GraficoService } from './services/grafico.service';
 import { OutliersComponent } from './components/outliers/outliers.component';
 import { ConjuntosComponent } from './components/conjuntos/conjuntos.component';
+import { ConjDiscretosComponent } from './components/conjuntos/discretos/conjdiscretos.component';
+import { ConjContinuosComponent } from './components/conjuntos/continuos/conjcontinuos.component';
 
 
 @NgModule({
@@ -23,6 +24,8 @@ import { ConjuntosComponent } from './components/conjuntos/conjuntos.component';
     HeaderComponent,
     ColunasComponent,
     ConjuntosComponent,
+    ConjDiscretosComponent,
+    ConjContinuosComponent,
     GraficoComponent,
     FiltrosComponent,
     OutliersComponent
@@ -36,8 +39,7 @@ import { ConjuntosComponent } from './components/conjuntos/conjuntos.component';
   ],
   providers: [
     ImportacaoService,
-    AppService,
-    GraficoService
+    AppService
   ],
   bootstrap: [AppComponent]
 })

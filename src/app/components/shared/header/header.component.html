@@ -1,14 +1,21 @@
 <input type="file" #inputFile (change)="selecionarArquivo($event)" style="display:none">
 <mat-toolbar color="primary">
-    <span>EasyMetrics</span>
+    <span>
+        <button mat-icon-button style="background-color: rgba(255,255,255,0.3);">
+            <mat-icon>insights</mat-icon>
+        </button>
+        EasyMetrics
+    </span>
     <span style="flex: 1 1 auto;"></span>
-    <button mat-raised-button="mat-raised-button" (click)="salvar()" class="btn_acao">
-        <i class="material-icons">cloud_download</i>
+    <span>{{arquivoCarregado$ | async }}</span>
+    &nbsp;
+    <button *ngIf="arquivoCarregado$ | async" mat-raised-button="mat-raised-button" (click)="salvar()" class="btn_acao">
+        <i class="material-icons">save</i>
         Salvar
     </button>
+    &nbsp;
     <button mat-raised-button="mat-raised-button" (click)="inputFile.click()" class="btn_acao">
-        <i class="material-icons">backup</i>
+        <i class="material-icons">add</i>
         Importar
     </button>
 </mat-toolbar>
-

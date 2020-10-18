@@ -1,1 +1,27 @@
-<div>tabela outliers</div>
+<div *ngIf="outliers$ | async as outliers" class="mat-elevation-z2" style="margin: 3px; padding: 3px;">
+    <div>
+        <span style="font-weight:bolder;">{{outliers.length}} Outliers</span>
+        <span style="flex: 1 1 auto"></span>
+        <span style="float: right;">
+            <input type="text" (keyup)="setFiltro($event.target.value)" placeholder="Filtrar Colunas">
+        </span>
+       
+    </div>
+    <div class="container-table">
+        <table matSort (matSortChange)="setSort($event)">
+            <tr>
+                <th>&nbsp;</th>
+                <th *ngFor="let key of keys">{{key}}</th>
+            </tr>
+            <tr *ngFor="let col of linhas_tabela">
+                <td>
+                    <span (click)="retirarOutlier(col)">
+                        <mat-icon class="btn_filtro">undo</mat-icon>
+                    </span>
+                </td>
+                <td *ngFor="let key of keys">{{col[key]}}</td>
+            </tr>
+        </table>
+    </div>
+    
+</div>

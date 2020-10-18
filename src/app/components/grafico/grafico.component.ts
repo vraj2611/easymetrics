@@ -1,41 +1,55 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { GraficoService } from 'src/app/services/grafico.service';
+import { IGrafico } from 'src/app/models/grafico.class';
+import { AppService } from 'src/app/services/app.service';
 
 @Component({
-  selector: 'app-grafico',
-  templateUrl: './grafico.component.html',
-  styleUrls: ['./grafico.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+	selector: 'app-grafico',
+	templateUrl: './grafico.component.html',
+	styleUrls: ['./grafico.component.css'],
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GraficoComponent {
 
-  grafico$: Observable<any>;
-  graf: {
-    ChartLegend: boolean;
-    ChartType: string;
-    ChartColors: any;
-    ChartOptions: any;
-    ChartData: any;
-    ChartLabels: any[];
-  }
-  //{ ChartOptions, ChartLegend, ChartData, ChartType, ChartColors }
+	grafico$: Observable<any>;
+	graf: IGrafico;
+	limite: {
+		xmax: number,
+		xmin: number,
+		ymax: number,
+		ymin: number,
+	}
 
-  constructor(private grafServ: GraficoService) {
-    this.grafico$ = this.grafServ.grafico$()
-  }
+	constructor(private serv: AppService) {
+		this.grafico$ = this.serv.grafico$();
+		this.limite = { xmax: null, xmin: null, ymax: null, ymin: null };
+	}
 
-  public chartClicked(ev): void {
-    console.log('click', ev)//this.grafServ.handleChartClick(ev)
-  }
+	public chartClicked(ev): void {
+		if (!ev['active'][0]) return
+		this.serv.clickPontoGrafico(
+			ev['active'][0]['_datasetIndex'],
+			ev['active'][0]['_index']
+		);
+	}
+
+	resizeGrafico() {
+		console.log(this.limite)
+	}
+
+	setXmin(v: number) {
+		this.limite.xmin = +v || null;
+	}
+
+	setXmax(v: number) {
+		this.limite.xmax = +v || null;
+	}
+
+	setYmin(v: number) {
+		this.limite.ymin = +v || null;
+	}
+
+	setYmax(v: number) {
+		this.limite.ymax = +v || null;
+	}
 }
-
-const chartColors = {
-  red: 'rgb(255, 99, 132)',
-  orange: 'rgb(255, 159, 64)',
-  yellow: 'rgb(255, 205, 86)',
-  green: 'rgb(75, 192, 192)',
-  blue: 'rgb(54, 162, 235)',
-  purple: 'rgb(153, 102, 255)',
-  grey: 'rgb(201, 203, 207)'
-};

@@ -20,7 +20,7 @@ export class Analise {
     }
 
     constructor(valores_y: number[], valores_x: number[] = null) {
-        if(valores_y.length < 2) return 
+        if (valores_y.length < 2) return
         this.y = this.calcularDispersao(valores_y);
         if (valores_x) {
             this.x = this.calcularDispersao(valores_x);
@@ -50,6 +50,29 @@ export class Analise {
             r2: ss.rSquared(pairs, ss.linearRegressionLine(lr)),
             rmse: 0
         }
+
+    }
+
+    static getHistograma(valores: number[], n_classes: number = 10) {
+        let min = ss.min(valores);
+        let max = ss.max(valores);
+        let larg = (max - min) / n_classes;
+        let classes = [];
+        for (let i = 0; i < n_classes; i++) {
+            let inf = (min + (larg * i)).toFixed(0);
+            let sup = (min + (larg * (i+1))).toFixed(0);
+            classes.push({
+                label: inf + "~" + sup,
+                qtde: 0
+            })
+        }
+        let hist = valores.reduce((classes, v)=>{
+            let c = Math.round(v / larg)
+            classes[c]['qtde'] += 1
+            return classes
+        })
+
+        return hist;
 
     }
 }
