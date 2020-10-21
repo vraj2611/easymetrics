@@ -1,4 +1,7 @@
 <div *ngIf="conjuntos$ | async as conjuntos" class="mat-elevation-z2" style="margin: 3px; padding: 3px;">
-<app-conjdiscretos *ngIf="!isConjuntoContinuo"></app-conjdiscretos>
-<app-conjcontinuos *ngIf="isConjuntoContinuo"></app-conjcontinuos>
+    <div style="display: flex; justify-content: space-between; font-weight:bolder;">
+        <span>{{conjuntos[0].coluna}}</span>
+    </div>
+    <app-conjdiscretos *ngIf="!isConjuntoContinuo"></app-conjdiscretos>
+    <app-conjcontinuos *ngIf="isConjuntoContinuo"></app-conjcontinuos>
 </div>

@@ -1,3 +1,4 @@
+import { ColunasComponent } from '../components/colunas/colunas.component';
 import { Analise } from './analise.class';
 import { IInfoColunas } from './basecolunas.class';
 import { BaseDados } from './basedados.class';
@@ -15,24 +16,24 @@ export class Conjunto {
     ids: Set<number>;
     outliers: Set<number>;
     analise: Analise;
-    filtro: number; 
+    filtro: number;
 
-    constructor(nome:string, coluna:string){
+    constructor(nome: string, coluna: string) {
         this.coluna = coluna;
         this.nome = nome;
         this.ids = new Set();
         this.outliers = new Set();
         this.filtro = 0;
     }
-    addId(id:number){ this.ids.add(id); }
-    addOutlier(id:number){ this.outliers.add(id) }
-    removeOutlier(id:number){ this.outliers.delete(id) }   
+    addId(id: number) { this.ids.add(id); }
+    addOutlier(id: number) { this.outliers.add(id) }
+    removeOutlier(id: number) { this.outliers.delete(id) }
 }
 
 export class BaseConjuntos {
-    private _conjuntos:Conjunto[];
+    private _conjuntos: Conjunto[];
 
-    constructor(){
+    constructor() {
         this._conjuntos = []
     }
 
@@ -76,11 +77,28 @@ export class BaseConjuntos {
         })
     }
 
-    getFuncaoFiltrar(ids_outliers:number[] = []) {
-        let incluir = new Set<number>();
+    getFuncaoFiltrar(ids_outliers: number[] = []) {
+
+        let cols = this._conjuntos.reduce((filtros, conj) => {
+            if (conj.filtro <= 0) return filtros;
+            let id_col = filtros.colunas.findIndex((c)=> c == conj.coluna)
+            if(id_col < 0) {
+                filtros.colunas.push(conj.coluna);
+                id_col = filtros.colunas.findIndex((c)=> c == conj.coluna);
+                filtros.ids[id_col] = [];
+            }
+            for (const id of conj.ids) filtros.ids[id_col].push(id);
+            return filtros
+        }, {colunas: [], ids:[[]]})
+
+        let prev = cols.ids.shift();
+        let incluidos = cols.ids.reduce((prev, col) => {
+            return prev.filter(id => col.includes(id))
+        }, prev);
+
+        let incluir = new Set(incluidos);
         let excluir = new Set<number>(ids_outliers);
         for (const g of this._conjuntos) {
-            if (g.filtro > 0) for (const id of g.ids) incluir.add(id)
             if (g.filtro < 0) for (const id of g.ids) excluir.add(id)
         }
         if (incluir.size > 0 && excluir.size > 0) {
@@ -93,18 +111,29 @@ export class BaseConjuntos {
         return function (id: number) { return true }
     }
 
-    calcularConjuntos(base:BaseDados, col:IInfoColunas, outliers:number[]=[]) {
+    analisarConjuntos(base: BaseDados, col: IInfoColunas, outliers: number[] = []) {
         const fnFiltrar = this.getFuncaoFiltrar(outliers);
         for (const conj of this._conjuntos) {
+            conj.analise = null;
             let ids = [...conj.ids].filter(fnFiltrar)
-            if (col.metrica) {
-                let ys = base.getValores(col.metrica, ids)
-                let xs = col.variavel ? base.getValores(col.variavel, ids) : null;
-                conj.analise = new Analise(ys, xs);
-            } else if (conj.nome == '_numeros') {
-                let ys = base.getValores(conj.coluna, ids)
-                conj.analise = new Analise(ys, null);
+            if (ids.length == 0) return
+            let xs = []; let ys = [];
+            if (col.strings.includes(conj.coluna)) {
+                ys = col.metrica ? base.getValores(col.metrica, ids) : [];
+                xs = col.variavel ? base.getValores(col.variavel, ids) : [];
             }
+            if (col.numeros.includes(conj.coluna)) {
+                if (conj.coluna == col.metrica) {
+                    xs = col.variavel ? base.getValores(col.variavel, ids) : [];
+                    ys = base.getValores(conj.coluna, ids)
+                } else if (conj.coluna == col.variavel) {
+                    xs = base.getValores(conj.coluna, ids)
+                } else {
+                    ys = base.getValores(conj.coluna, ids)
+                }
+
+            }
+            conj.analise = new Analise(ys, xs);
         }
     }
 

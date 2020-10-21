@@ -68,7 +68,6 @@ export class AppService {
 		this._base = new BaseDados(dados);
 		let colunas = this._base.getColunas()
 		this._colunas.next(colunas);
-		//this.grafServ.plotEspalhamentoColunas();	
 	}
 
 	selecionarColuna(coluna:string){
@@ -80,21 +79,13 @@ export class AppService {
 		this._base.setStatus(nome_coluna, status);
 		let colunas = this._base.getColunas();
 		this._colunas.next(colunas);
-		let ds = this._base.getDatasets();
-		if(ds.length > 0){
-			let graf = Grafico.createBubbleChart(ds);
-        	this._grafico.next(graf)
-		}	
+		this.atualizarGrafico();
 	}
 
 	setFiltro(filtro: IFiltro){
 		let filtros = this._base.setFiltro(filtro);
 		this._filtros.next(filtros);
-		let ds = this._base.getDatasets();
-		if(ds.length > 0){
-			let graf = Grafico.createBubbleChart(ds);
-        	this._grafico.next(graf)
-		}
+		this.atualizarGrafico();
 	}
 
 	toogleOutlier(id: number) {
@@ -102,6 +93,7 @@ export class AppService {
 		this._outliers.next(outliers);
 		this._colunas.next(this._base.getColunas());
 		this._conjuntos.next(this._base.getConjuntos());
+		this.atualizarGrafico();
 	}
 
 	clickPontoGrafico(datasetindex:number, index:number){
@@ -113,13 +105,16 @@ export class AppService {
 		this._base.toogleExibir(coluna);
 		let outliers = this._base.getOutliers();
 		this._outliers.next(outliers);
+		this.atualizarGrafico();
+	}
+
+	atualizarGrafico(){
 		let ds = this._base.getDatasets();
+		let col = this._base.getInfoColunas();
 		if(ds.length > 0){
-			let graf = Grafico.createBubbleChart(ds);
+			let graf = Grafico.createBubbleChart(ds, col);
         	this._grafico.next(graf)
 		}
 	}
-
-
 }
 

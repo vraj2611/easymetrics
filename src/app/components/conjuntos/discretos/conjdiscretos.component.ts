@@ -30,26 +30,14 @@ export class ConjDiscretosComponent extends Tabela {
   }
 
   tratarRow(row: Conjunto) {
-    let media = 0;
-    let coef = 0;
-    let min = 0;
-    let max = 0;
-    if (row.analise) {
-      media = row.analise?.y?.media || media;
-      coef = row.analise?.y?.coef_var || coef;
-      max = row.analise?.y?.max || max;
-      min = row.analise?.y?.min || min;
-    }
     return {
       nome: row.nome,
       coluna: row.coluna,
       quantidade: row.ids.size,
-      outliers: row.outliers.size,
-      media: Math.round(media * 100) / 100,
-      coef_var: Math.round(coef * 100) / 100,
-      max: Math.round(max * 100) / 100,
-      min: Math.round(min * 100) / 100,
-      filtro: row.filtro
+      filtro: row.filtro,
+      media: row.analise?.y?.media,
+      formula: row.analise?.regressao?.formula,
+      coef_var: row.analise?.y?.coef_var
     }
   }
 

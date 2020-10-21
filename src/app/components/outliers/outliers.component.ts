@@ -23,12 +23,15 @@ export class OutliersComponent extends Tabela{
       this.linhas_tabela = outliers;
       this.keys = [];
       for (const key in outliers[0]) this.keys.push(key)
-      console.log(outliers)
     }))
   }
 
   retirarOutlier(outlier:IRegistro){
     this.serv.toogleOutlier(outlier._id);
+  }
+
+  isNumber(v:any){
+    return !isNaN(+v)
   }
 
 }

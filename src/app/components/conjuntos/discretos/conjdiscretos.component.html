@@ -1,42 +1,41 @@
-<div *ngIf="conjuntos$ | async as conjuntos" class="mat-elevation-z2" style="margin: 3px; padding: 3px;">
-    <div style="display: flex; justify-content: space-between; font-weight:bolder;">
-        <span>{{coluna}}</span>
-    </div>
+<div *ngIf="conjuntos$ | async as conjuntos">
     <div style="display: flex; justify-content: space-between; font-weight:bolder;">
         <span *ngIf="filtro?.length > 0">{{linhas_tabela.length}} de&nbsp;</span>
         <span>{{conjuntos.length}} Conjuntos</span>
         <span style="flex: 1 1 auto;"></span>
         <span>
-            <input type="text" (keyup)="setFiltro($event.target.value)" placeholder="Filtrar Grupos" style="max-width: 100px;">
+            <input type="text" (keyup)="setFiltro($event.target.value)" placeholder="Filtrar Grupos"
+                style="max-width: 100px;">
         </span>
-        
+
 
     </div>
     <div class="container-table">
         <table matSort (matSortChange)="setSort($event)">
             <tr>
                 <th mat-sort-header="nome" class="th1">Valor</th>
+                <th>Filtro</th>
                 <th mat-sort-header="quantidade">Qtde.</th>
-                <th mat-sort-header="outliers">Outliers</th>
                 <th mat-sort-header="media">Média</th>
                 <th mat-sort-header="coef_var">Var%</th>
-                <th>Filtro</th>
             </tr>
-                <tr *ngFor="let conj of linhas_tabela">
-                    <td class="coluna1">{{conj.nome}}</td>
-                    <td>{{conj.quantidade}}</td>
-                    <td>{{conj.outliers}}</td>
-                    <td>{{conj.media}}</td>
-                    <td>{{conj.coef_var}}</td>
-                    <td>
-                        <span (click)="setConjuntoFiltro(conj, 1)">
-                            <mat-icon class="btn_filtro">filter_alt</mat-icon>
-                        </span>
-                        <span (click)="setConjuntoFiltro(conj, -1)">
-                            <mat-icon class="btn_block">block</mat-icon>
-                        </span>
-                    </td>
-                </tr>
+            <tr *ngFor="let conj of linhas_tabela">
+                <td class="coluna1">{{conj.nome}}</td>
+                <td>
+                    <span (click)="setConjuntoFiltro(conj, 1)">
+                        <mat-icon class="btn_filtro">filter_alt</mat-icon>
+                    </span>
+                    <span (click)="setConjuntoFiltro(conj, -1)">
+                        <mat-icon class="btn_block">block</mat-icon>
+                    </span>
+                </td>
+                <td>{{conj.quantidade}}</td>
+                <td>
+                    <span *ngIf="!conj.formula">{{conj.media | number:'1.2-2'}}</span>
+                    <span *ngIf="conj.formula">{{conj.formula}}</span>
+                </td>
+                <td>{{conj.coef_var  | number:'1.2-2'}}</td>
+            </tr>
         </table>
     </div>
 </div>

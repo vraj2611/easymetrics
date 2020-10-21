@@ -3,7 +3,7 @@
         [legend]="graf.legend" [chartType]="graf.chartType" [labels]="graf.labels" (chartClick)="chartClicked($event)">
     </canvas>
     <div *ngIf="graf.chartType == 'bubble'">
-        <span>
+        <span *ngIf="false">
             Eixo X:&nbsp;
             <input type="text" (keyup)="setXmin($event.target.value)" placeholder="Xmin" style="max-width: 50px;">
             ~

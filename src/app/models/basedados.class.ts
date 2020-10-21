@@ -1,5 +1,6 @@
 import { BaseConjuntos, IFiltro } from './baseconjuntos.class'
-import { BaseColunas, Status } from './basecolunas.class'
+import { BaseColunas, IInfoColunas, Status } from './basecolunas.class'
+import { Analise } from './analise.class';
 
 export interface IRegistro {
     _id: number;
@@ -8,11 +9,18 @@ export interface IRegistro {
     _obs: string;
 }
 
+export interface INumero {
+    id: number;
+    coluna: number;
+    valor: number;
+}
+
 export interface IDataset {
     label: string;
     xs: number[];
     ys: number[];
     data: any[];
+    analise?: Analise
 }
 
 export class BaseDados {
@@ -20,7 +28,7 @@ export class BaseDados {
     private _registros: IRegistro[]
     private _basecolunas: BaseColunas;
     private _baseconjuntos: BaseConjuntos;
-    private _datasets: IDataset[]
+    private _datasets: IDataset[];
 
     constructor(registros: any[]) {
         this._basecolunas = new BaseColunas();
@@ -30,7 +38,7 @@ export class BaseDados {
         this.carregar(registros);
         let conjs = this._baseconjuntos.getConjuntos();
         this._basecolunas.classificarColunas(conjs);
-        this.calcularConjuntos();
+        this.analisarConjuntos();
     }
 
     getColunas() {
@@ -59,7 +67,7 @@ export class BaseDados {
 
     setStatus(nome_coluna: string, status: Status) {
         this._basecolunas.setStatus(nome_coluna, status);
-        this.calcularConjuntos();
+        this.analisarConjuntos();
     }
 
     getNumeros() {
@@ -95,37 +103,52 @@ export class BaseDados {
     atualizarDatasets() {
         this._datasets = [];
         let cols = this._basecolunas.getInfo()
-        if (!cols.metrica) return;
+        if (!cols.metrica && !cols.variavel) return;
 
         let conjs = this._baseconjuntos.getConjuntos().filter(conj => {
             if (cols.grupo && (conj.coluna == cols.grupo)) return true
             if (!cols.grupo && (conj.coluna == cols.metrica)) return true
+            if (!cols.grupo && (conj.coluna == cols.variavel)) return true
             return false
         })
 
         let ids_outliers = this.getOutliers(true);
         const fnFiltrar = this._baseconjuntos.getFuncaoFiltrar(ids_outliers);
+        
+        let analise_coluna = null;
+        if (cols.metrica && cols.variavel) {
+            for (const conj of conjs) {
+                if(conj.coluna == cols.metrica) analise_coluna = conj.analise
+            }
+        }
 
-        this._datasets = conjs.map(conj => {
-            let ids = [...conj.ids].filter(fnFiltrar)
-            return this.createDataset(
-                [...conj.ids].filter(fnFiltrar),
-                conj.nome, cols.metrica, cols.variavel, cols.visiveis
+        this._datasets = conjs.map((conj, i) => {
+            let grp = (cols.metrica && cols.variavel) ? null : i + 1;
+            let analise_conj = analise_coluna || conj.analise 
+            return this.criarDataset(
+                [...conj.ids].filter(fnFiltrar), conj.nome, cols, grp, analise_conj
             )
         })
 
         if (ids_outliers.length > 0) {
-            let outliers = this.createDataset(
-                ids_outliers, "Outliers", cols.metrica, cols.variavel, cols.visiveis
-            )
+            let grp = (cols.metrica && cols.variavel) ? null : this._datasets.length + 1
+            let outliers = this.criarDataset(ids_outliers, "Outliers", cols, grp, null)
             this._datasets.push(outliers);
         }
 
+
+
     }
 
-    createDataset(ids: number[], label: string, col_y: string, col_x: string, cols_info: string[]) {
-        let ys = this.getValores(col_y, ids)
-        let xs = col_x ? this.getValores(col_x, ids) : null;
+    criarDataset(ids: number[], label: string, col: IInfoColunas, grupo_index: number = null, analise: Analise = null) {
+        let ys = (col.metrica)
+            ? this.getValores(col.metrica, ids)
+            : ids.map(i => (-0.5 + Math.random()) * 0.3 + grupo_index)
+
+        let xs = (col.variavel)
+            ? this.getValores(col.variavel, ids)
+            : ids.map(i => (-0.5 + Math.random()) * 0.3 + grupo_index)
+
         let data = ids.map((id, index) => {
             let point = {
                 x: xs[index],
@@ -133,20 +156,20 @@ export class BaseDados {
                 r: 3,
                 d: { id: id }
             }
-            for (const col of cols_info) point.d[col] = this._registros[id][col]
+            for (const c of col.visiveis) point.d[c] = this._registros[id][c]
             return point
         })
-        return { label, xs, ys, data }
+        return { label, xs, ys, data, analise }
     }
 
     getIdFromPonto(datasetindex: number, index: number): number {
         return this._datasets[datasetindex].data[index]['d']['id']
     }
 
-    private calcularConjuntos(ids: number[] = null) {
+    private analisarConjuntos(ids: number[] = null) {
         let info_colunas = this._basecolunas.getInfo();
         let outliers = this.getOutliers(true)
-        this._baseconjuntos.calcularConjuntos(this, info_colunas, outliers);
+        this._baseconjuntos.analisarConjuntos(this, info_colunas, outliers);
         this.atualizarDatasets();
         this._basecolunas.calcularColunas(
             this._baseconjuntos.getConjuntos()
@@ -168,19 +191,22 @@ export class BaseDados {
 
     toogleOutlier(id: number): IRegistro[] {
         this._registros[id]._outlier = !(this._registros[id]._outlier)
-        this.calcularConjuntos([id]);
+        this.analisarConjuntos([id]);
         return this.getOutliers();
     }
 
-    toogleExibir(coluna:string){
+    toogleExibir(coluna: string) {
         this._basecolunas.toogleExibir(coluna);
         this.atualizarDatasets();
     }
 
     setFiltro(f: IFiltro): IFiltro[] {
         this._baseconjuntos.setFiltro(f);
-        this.calcularConjuntos();
+        this.analisarConjuntos();
         return this._baseconjuntos.getFiltros();
     }
 
+    getInfoColunas(){
+        return this._basecolunas.getInfo();
+    }
 }

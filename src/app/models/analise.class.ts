@@ -1,6 +1,7 @@
+import { RtlScrollAxisType } from '@angular/cdk/platform';
 import * as ss from 'simple-statistics';
 
-interface IDispersao {
+export interface IDispersao {
     distintos: number;
     media: number;
     desviopadrao: number;
@@ -9,23 +10,25 @@ interface IDispersao {
     max: number;
 };
 
+export interface IRegressao {
+    ax: number;
+    b: number;
+    r2: number;
+    rmse: number;
+    formula: string;
+}
+
 export class Analise {
     y?: IDispersao
     x?: IDispersao
-    regressao?: {
-        ax: number;
-        b: number;
-        r2: number;
-        rmse: number;
-    }
+    regressao?: IRegressao
 
-    constructor(valores_y: number[], valores_x: number[] = null) {
-        if (valores_y.length < 2) return
-        this.y = this.calcularDispersao(valores_y);
-        if (valores_x) {
-            this.x = this.calcularDispersao(valores_x);
-            this.regressao = this.calcularRegressao(valores_x, valores_y);
-        }
+    constructor(valores_y: number[], valores_x: number[] = []) {
+        if (valores_y.length > 0) this.y = this.calcularDispersao(valores_y);
+        if (valores_x.length > 0) this.x = this.calcularDispersao(valores_x);
+        if (valores_x.length > 0 && valores_y.length > 0)
+        this.regressao = this.calcularRegressao(valores_x, valores_y);
+
     }
 
     calcularDispersao(valores: number[]): IDispersao {
@@ -41,14 +44,17 @@ export class Analise {
         }
     }
 
-    calcularRegressao(xs: number[], ys: number[]) {
+    calcularRegressao(xs: number[], ys: number[]):IRegressao {
         let pairs = xs.map((x, i) => [x, ys[i]])
         let lr = ss.linearRegression(pairs);
+        let fixo = lr.b.toFixed(2).replace('.',',').replace(/\d(?=(\d{3})+\,)/g, '$&.');
+        let vrv = lr.m.toFixed(2).replace('.',',').replace(/\d(?=(\d{3})+\,)/g, '$&.');
         return {
             ax: lr.m,
             b: lr.b,
             r2: ss.rSquared(pairs, ss.linearRegressionLine(lr)),
-            rmse: 0
+            rmse: 0,
+            formula: vrv + ".x + " + fixo
         }
 
     }

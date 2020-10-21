@@ -19,7 +19,10 @@
                         <mat-icon class="btn_filtro">undo</mat-icon>
                     </span>
                 </td>
-                <td *ngFor="let key of keys">{{col[key]}}</td>
+                <td *ngFor="let key of keys">
+                    <ng-container *ngIf="isNumber(col[key])">{{col[key] | number}}</ng-container>
+                    <ng-container *ngIf="!isNumber(col[key])">{{col[key]}}</ng-container>
+                </td>
             </tr>
         </table>
     </div>
