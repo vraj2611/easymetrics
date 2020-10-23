@@ -16,6 +16,7 @@ export interface IRegressao {
     r2: number;
     rmse: number;
     formula: string;
+    coef_var: number;
 }
 
 export class Analise {
@@ -47,16 +48,22 @@ export class Analise {
     calcularRegressao(xs: number[], ys: number[]):IRegressao {
         let pairs = xs.map((x, i) => [x, ys[i]])
         let lr = ss.linearRegression(pairs);
-        let fixo = lr.b.toFixed(2).replace('.',',').replace(/\d(?=(\d{3})+\,)/g, '$&.');
-        let vrv = lr.m.toFixed(2).replace('.',',').replace(/\d(?=(\d{3})+\,)/g, '$&.');
+        let sum_errors = xs.map((x,i)=> ys[i] - (x*lr.m + lr.b))
         return {
             ax: lr.m,
             b: lr.b,
             r2: ss.rSquared(pairs, ss.linearRegressionLine(lr)),
-            rmse: 0,
-            formula: vrv + ".x + " + fixo
+            rmse: ss.rootMeanSquare(sum_errors),
+            coef_var: 1,
+            formula: this.getFormula(lr)
         }
 
+    }
+
+    getFormula(lr):string{
+        let fixo = lr.b.toFixed(2).replace('.',',').replace(/\d(?=(\d{3})+\,)/g, '$&.');
+        let variavel = lr.m.toFixed(2).replace('.',',').replace(/\d(?=(\d{3})+\,)/g, '$&.');
+        return variavel + ".x + " + fixo
     }
 
     static getHistograma(valores: number[], n_classes: number = 10) {

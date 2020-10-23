@@ -7,7 +7,7 @@ import { AppService } from './app.service';
 })
 export class ImportacaoService {
 
-  private _arquivoCarregado = new BehaviorSubject<string>(null)
+  private _arquivoCarregado = new BehaviorSubject<[string, number]>(null)
   private filename = '';
 
   constructor(
@@ -40,8 +40,8 @@ export class ImportacaoService {
       const wsname: string = wb.SheetNames[0];
       const ws: xlsx.WorkSheet = wb.Sheets[wsname];
       let data = xlsx.utils.sheet_to_json(ws);
-      this.appServ.carregar(data);
-      this._arquivoCarregado.next(this.filename);
+      let qtde = this.appServ.carregar(data);
+      this._arquivoCarregado.next([this.filename, qtde]);
     };
     this.filename = target.files[0].name
     reader.readAsBinaryString(target.files[0]);

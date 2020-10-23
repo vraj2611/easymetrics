@@ -7,8 +7,8 @@
         EasyMetrics
     </span>
     <span style="flex: 1 1 auto;"></span>
-    <span>{{arquivoCarregado$ | async }}</span>
-    &nbsp;
+    <span *ngIf="arquivoCarregado$ | async as carreg">{{carreg[0]}}, {{carreg[1]}} itens</span>
+    <span style="flex: 1 1 auto;"></span>
     <button *ngIf="arquivoCarregado$ | async" mat-raised-button="mat-raised-button" (click)="salvar()" class="btn_acao">
         <i class="material-icons">save</i>
         Salvar

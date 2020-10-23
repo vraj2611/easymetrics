@@ -90,7 +90,7 @@ export class BaseDados {
             for (const key in reg) {
                 let col = this._basecolunas.getColuna(key);
                 let conj = this._baseconjuntos.getConjunto(reg[key], col.nome);
-                conj.addId(index)
+                conj.ids.add(index)
             }
             reg._id = index
             reg._filtro = true;

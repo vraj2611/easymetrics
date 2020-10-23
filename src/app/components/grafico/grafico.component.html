@@ -4,6 +4,9 @@
     </canvas>
     <div *ngIf="graf.chartType == 'bubble'">
         <span *ngIf="false">
+            Tam:&nbsp;
+            <input type="number" (keyup)="setTam($event.target.value)" placeholder="Xmin" style="max-width: 50px;">
+            
             Eixo X:&nbsp;
             <input type="text" (keyup)="setXmin($event.target.value)" placeholder="Xmin" style="max-width: 50px;">
             ~

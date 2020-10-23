@@ -10,7 +10,7 @@ import { ImportacaoService } from 'src/app/services/importacao.service';
 })
 export class HeaderComponent{
 
-  arquivoCarregado$:Observable<string>
+  arquivoCarregado$:Observable<[string,number]>
 
   importado:boolean = false
   constructor(

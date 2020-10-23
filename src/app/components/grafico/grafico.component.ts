@@ -37,6 +37,10 @@ export class GraficoComponent {
 		console.log(this.limite)
 	}
 
+	setTam(v:number){
+		
+	}
+
 	setXmin(v: number) {
 		this.limite.xmin = +v || null;
 	}

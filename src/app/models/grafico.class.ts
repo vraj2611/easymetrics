@@ -1,5 +1,6 @@
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { IInfoColunas } from './basecolunas.class';
+import { Conjunto } from './baseconjuntos.class';
 import { IDataset } from './basedados.class';
 
 export interface IGrafico {
@@ -34,11 +35,11 @@ export class Grafico {
 		return titulo;
 	}
 
-	static createBubbleChart(ds: IDataset[], col:IInfoColunas): IGrafico {
+	static createBubbleChart(ds: IDataset[], col:IInfoColunas, global:Conjunto): IGrafico {
 		return {
 			legend: true,
 			chartType: 'bubble',
-			datasets: this.criarDatasetGrafBolha(ds),
+			datasets: this.criarDatasetGrafBolha(ds, global),
 			options: {
 				animation: { duration: 0 },
 				responsive: true,
@@ -81,13 +82,13 @@ export class Grafico {
 		})
 	}
 
-	static criarDatasetMedia(datasets: IDataset[]): ChartDataSets {
+	static criarDatasetMedia(datasets: IDataset[], global:Conjunto) {
 		let dados_media = datasets.reduce((ds, conj, index) => {
 			if (conj.analise?.regressao) {
-				let min_y = conj.analise.x.min * conj.analise.regressao.ax + conj.analise.regressao.b;
-				let max_y = conj.analise.x.max * conj.analise.regressao.ax + conj.analise.regressao.b;
-				ds.push({ x: conj.analise.x.min, y: min_y, d: conj.analise.regressao })
-				ds.push({ x: conj.analise.x.max, y: max_y, d: conj.analise.regressao })
+				let min_y = global.analise.x.min * global.analise.regressao.ax + global.analise.regressao.b;
+				let max_y = global.analise.x.max * global.analise.regressao.ax + global.analise.regressao.b;
+				ds.push({ x: global.analise.x.min, y: min_y, d: global.analise.regressao })
+				ds.push({ x: global.analise.x.max, y: max_y, d: global.analise.regressao })
 				return ds
 			}
 			if (conj.analise?.x) {
@@ -120,13 +121,20 @@ export class Grafico {
 		}
 	}
 
-	static criarDatasetPad(datasets: IDataset[]): ChartDataSets[] {
+	static criarDatasetDistribuicao(datasets: IDataset[], global:Conjunto) {
+
 		let dados_pad = datasets.reduce((ds, conj, index) => {
 			if (conj.analise?.regressao) {
-				let min_y = conj.analise.x.min * conj.analise.regressao.ax + conj.analise.regressao.b;
-				let max_y = conj.analise.x.max * conj.analise.regressao.ax + conj.analise.regressao.b;
-				ds.push({ x: conj.analise.x.min, y: min_y, d: conj.analise.regressao })
-				ds.push({ x: conj.analise.x.max, y: max_y, d: conj.analise.regressao })
+				let min_x = global.analise.x.min;
+				let max_x = global.analise.x.max;
+				let min_y = min_x * global.analise.regressao.ax + global.analise.regressao.b;
+				let max_y = max_x * global.analise.regressao.ax + global.analise.regressao.b;
+				let rmse = global.analise.regressao.rmse;
+				ds.push({ x: min_x, y: min_y - rmse, d: global.analise.regressao })
+				ds.push({ x: min_x, y: min_y + rmse, d: global.analise.regressao })
+				ds.push({ x: max_x, y: max_y + rmse, d: global.analise.regressao })
+				ds.push({ x: max_x, y: max_y - rmse, d: global.analise.regressao })
+				ds.push({ x: min_x, y: min_y - rmse, d: global.analise.regressao })
 				return ds
 			}
 			if (conj.analise?.x) {
@@ -151,8 +159,8 @@ export class Grafico {
 			}
 			return ds;
 		}, []);
-
-		return [{
+		
+		let dist_ds = [{
 			label: "Pad",
 			data: dados_pad,
 			backgroundColor: 'rgba(0,0,0,0)',
@@ -162,17 +170,15 @@ export class Grafico {
 			type: 'line',
 			lineTension: 0,
 			pointBackgroundColor: 'lightgrey'
-		},
-	]
+		}]
+		let media_ds = Grafico.criarDatasetMedia(datasets, global);
+		return dist_ds.concat(media_ds)
 	}
 
-	static criarDatasetGrafBolha(datasets: IDataset[]): ChartDataSets[] {
+	static criarDatasetGrafBolha(datasets: IDataset[], global): ChartDataSets[] {
 		let pontos = Grafico.criarDatasetPontos(datasets);
-		let pads = Grafico.criarDatasetPad(datasets);
-		for(const p of pads) pontos.push(p);
-		let media_ds = Grafico.criarDatasetMedia(datasets);
-		pontos.push(media_ds);
-		
+		let distr = Grafico.criarDatasetDistribuicao(datasets, global);
+		for(const d of distr) pontos.push(d);
 		return pontos
 	}
 
