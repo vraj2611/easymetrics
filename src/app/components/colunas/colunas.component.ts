@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, tap, withLatestFrom } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { Coluna, Status } from 'src/app/models/basecolunas.class';
 import { AppService } from 'src/app/services/app.service';
 import { Tabela } from '../shared/tabela.class';
@@ -17,7 +17,8 @@ export class ColunasComponent extends Tabela {
   constructor(private serv: AppService) {
     super();
     this.colunas$ = this.serv.colunas$().pipe(tap(cols => {
-      this.linhas_tabela = cols;
+      //this.linhas_tabela = cols;
+      this.atualizar();
     }))
   }
 

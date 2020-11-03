@@ -1,7 +1,33 @@
+.container-table {
+    max-height: 800px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    width: 100%;
+}
+
 th {
     background-color: white;
     top: 0;
+    position: sticky;
     border-color: lightgray;
     border-style: ridge;
     border-width: 2px 0px 2px 0px;
 }
+
+
+.th1 {
+    left:0;
+    z-index: 999;
+}
+
+.coluna1 {
+    cursor:pointer;
+    position: sticky;
+    left: 0;
+    background-color: white;
+    border-color: gray;
+    border-style: ridge;
+    border-width: 0px 2px 0px 0px;
+}
+

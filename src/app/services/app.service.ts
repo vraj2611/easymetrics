@@ -78,6 +78,7 @@ export class AppService {
 
 	setStatus(nome_coluna: string, status: Status) {
 		this._base.setStatus(nome_coluna, status);
+		this.selecionarColuna(nome_coluna);
 		this.atualizarGrafico();
 	}
 

@@ -1,5 +1,5 @@
 .container-table {
-    max-height: 150px;
+    max-height: 500px;
     display: flex;
     flex-direction: column;
     overflow-y: scroll;

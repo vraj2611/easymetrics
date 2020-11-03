@@ -37,7 +37,8 @@ export class ConjDiscretosComponent extends Tabela {
       filtro: row.filtro,
       media: row.analise?.y?.media,
       formula: row.analise?.regressao?.formula,
-      coef_var: row.analise?.y?.coef_var
+      coef_var: row.analise?.y?.coef_var,
+      rmse: row.analise?.regressao.rmse || 0
     }
   }
 

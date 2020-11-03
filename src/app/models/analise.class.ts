@@ -1,4 +1,3 @@
-import { RtlScrollAxisType } from '@angular/cdk/platform';
 import * as ss from 'simple-statistics';
 
 export interface IDispersao {
@@ -18,7 +17,7 @@ export interface IRegressao {
     formula: string;
     coef_var: number;
 }
-
+ 
 export class Analise {
     y?: IDispersao
     x?: IDispersao
@@ -46,6 +45,17 @@ export class Analise {
     }
 
     calcularRegressao(xs: number[], ys: number[]):IRegressao {
+        if(this.x.desviopadrao == 0){
+            return {
+                ax: 0,
+                b: this.x.media,
+                r2: 1,
+                rmse: this.x.coef_var,
+                coef_var: 1,
+                formula: 'Fixo: N/A'
+            }
+        }
+        
         let pairs = xs.map((x, i) => [x, ys[i]])
         let lr = ss.linearRegression(pairs);
         let sum_errors = xs.map((x,i)=> ys[i] - (x*lr.m + lr.b))
@@ -63,7 +73,8 @@ export class Analise {
     getFormula(lr):string{
         let fixo = lr.b.toFixed(2).replace('.',',').replace(/\d(?=(\d{3})+\,)/g, '$&.');
         let variavel = lr.m.toFixed(2).replace('.',',').replace(/\d(?=(\d{3})+\,)/g, '$&.');
-        return variavel + ".x + " + fixo
+        let sinal = (fixo < 0 ) ? '.x ' : '.x +';
+        return variavel + sinal + fixo
     }
 
     static getHistograma(valores: number[], n_classes: number = 10) {
@@ -88,4 +99,5 @@ export class Analise {
         return hist;
 
     }
+
 }

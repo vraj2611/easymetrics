@@ -1,7 +1,19 @@
+import { formatNumber } from '@angular/common';
+
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { IInfoColunas } from './basecolunas.class';
 import { Conjunto } from './baseconjuntos.class';
 import { IDataset } from './basedados.class';
+
+function abrevNumero(value):string{
+	let sufixo = '';
+	value = +value;
+	if (Math.abs(value) > 1000000) {
+		sufixo = " MM"
+		value /= 1000000
+	}
+	return formatNumber(value,'en-US') + sufixo
+}
 
 export interface IGrafico {
 	datasets: ChartDataSets[];
@@ -51,13 +63,25 @@ export class Grafico {
 				},
 				maintainAspectRatio: false,
 				legend: { position: 'bottom' },
-				scales: { xAxes: [{}], yAxes: [{}] },
+				scales: { xAxes: [{}], yAxes: [{
+					ticks: {
+						callback: function(value, index, values) {
+							let sufixo = '';
+							value = +value;
+							if (Math.abs(value) > 1000000) {
+								sufixo = " MM"
+								value /= 1000000
+							}
+							return formatNumber(+value,'en-US') + sufixo
+						}
+					}
+				}]},
 				tooltips: {
 					displayColors: false,
 					callbacks: {
 						label: function (tooltipItem, data) {
 							let info = <any>data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]
-							let texto = ["Informações", "-----------"]
+							let texto = ["INFORMAÇÕES"]
 							for (const key in info['d']) {
 								texto.push(key + ": " + Grafico.formatado(info['d'][key]))
 							}

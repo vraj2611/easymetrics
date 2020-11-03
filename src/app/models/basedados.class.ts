@@ -8,7 +8,7 @@ export interface IRegistro {
     _filtro: boolean;
     _obs: string;
 }
-
+ 
 export interface INumero {
     id: number;
     coluna: number;
@@ -29,6 +29,8 @@ export class BaseDados {
     private _basecolunas: BaseColunas;
     private _baseconjuntos: BaseConjuntos;
     private _datasets: IDataset[];
+    private _incluidos: number[];
+    private _excluidos: number[];
 
     constructor(registros: any[]) {
         this._basecolunas = new BaseColunas();
@@ -171,9 +173,7 @@ export class BaseDados {
         let outliers = this.getOutliers(true)
         this._baseconjuntos.analisarConjuntos(this, info_colunas, outliers);
         this.atualizarDatasets();
-        this._basecolunas.calcularColunas(
-            this._baseconjuntos.getConjuntos()
-        )
+        this._basecolunas.calcularColunas(this)
     }
 
     getOutliers(somente_ids: boolean = false): any[] {
@@ -191,7 +191,7 @@ export class BaseDados {
 
     toogleOutlier(id: number): IRegistro[] {
         this._registros[id]._outlier = !(this._registros[id]._outlier)
-        this.analisarConjuntos([id]);
+        this.analisarConjuntos();
         return this.getOutliers();
     }
 
@@ -208,5 +208,9 @@ export class BaseDados {
 
     getInfoColunas(){
         return this._basecolunas.getInfo();
+    }
+
+    getFuncaoFiltrar(){
+        return this._baseconjuntos.getFuncaoFiltrar();
     }
 }

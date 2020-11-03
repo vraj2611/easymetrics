@@ -9,21 +9,23 @@
        
     </div>
     <div class="container-table">
-        <table matSort (matSortChange)="setSort($event)">
+        <table matSort (matSortChange)="setSort($event)" style="width: 100%;">
             <tr>
                 <th mat-sort-header="tipo"></th>
-                <th mat-sort-header="nome">Coluna</th>
+                <th mat-sort-header="nome" class="th1">Coluna</th>
                 <th>Ver</th>
                 <th mat-sort-header="distintos">Conjs.</th>
-                <th mat-sort-header="maior_var">Var%</th>
+                <th mat-sort-header="maiorvar">Var%</th>
                 <th mat-sort-header="status">Status</th>
+                <th mat-sort-header="desvpad_global">Desv.pad</th>
+                <th mat-sort-header="ordem_indicacao">Indicacao</th>
             </tr>
             <tr *ngFor="let col of linhas_tabela">
                 <td>
                     <span *ngIf="col.tipo == 'Numero'" style="background-color: blue; color: white; font-weight: bolder;">&nbsp;N&nbsp;</span>
                     <span *ngIf="col.tipo == 'String'" style="background-color: green; color: white; font-weight: bolder;">&nbsp;S&nbsp;</span>
                 </td>
-                <td (click)="selecionarColuna(col.nome)" style="cursor:pointer">{{col.nome}}</td>
+                <td (click)="selecionarColuna(col.nome)" class="coluna1">{{col.nome}}</td>
                 <td>
                     <span *ngIf="col.exibir" (click)="setColunaVisivel(col)" matTooltip="Visulizar Coluna no Tooltip" style="color: red;; font-weight: bolder; cursor: pointer;">Sim</span>
                     <span *ngIf="!col.exibir" (click)="setColunaVisivel(col)" matTooltip="Visulizar Coluna no Tooltip" style="color: lightgray; font-weight: bolder; cursor: pointer;">Não</span>
@@ -61,6 +63,8 @@
                             Y</span>
                     </ng-container>
                 </td>
+                <td style="text-align: right;">{{col.desvpad_global | number:'1.2-2'}}</td>
+                <td style="text-align: center;">{{col.ordem_indicacao }}</td>
             </tr>
         </table>
     </div>

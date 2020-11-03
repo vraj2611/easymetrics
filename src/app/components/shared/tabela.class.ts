@@ -22,11 +22,15 @@ export class Tabela {
     }
 
     atualizar() {
-        const data = this.getDadosAtuais();
-        const ord = this.ordenar(data, this.sort);
-        const filtro = this.filtrar(ord, this.filtro);
-        this.filtrados = filtro.length;
-        this.linhas_tabela = filtro;
+        try {
+            const data = this.getDadosAtuais();
+            const ord = this.ordenar(data, this.sort);
+            const filtro = this.filtrar(ord, this.filtro);
+            this.filtrados = filtro.length;
+            this.linhas_tabela = filtro;    
+        } catch (error) {
+            this.linhas_tabela = [];
+        }
     }
 
     ordenar(linhas: any[], sort: Sort): any[] {

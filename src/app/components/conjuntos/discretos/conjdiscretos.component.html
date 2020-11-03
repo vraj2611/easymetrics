@@ -11,12 +11,13 @@
 
     </div>
     <div class="container-table">
-        <table matSort (matSortChange)="setSort($event)">
+        <table matSort (matSortChange)="setSort($event)"  style="width: 100%;">
             <tr>
                 <th mat-sort-header="nome" class="th1">Valor</th>
                 <th>Filtro</th>
                 <th mat-sort-header="quantidade">Qtde.</th>
                 <th mat-sort-header="media">Média</th>
+                <th mat-sort-header="rmse">RMSE</th>
                 <th mat-sort-header="coef_var">Var%</th>
             </tr>
             <tr *ngFor="let conj of linhas_tabela">
@@ -34,7 +35,8 @@
                     <span *ngIf="!conj.formula">{{conj.media | number:'1.2-2'}}</span>
                     <span *ngIf="conj.formula">{{conj.formula}}</span>
                 </td>
-                <td>{{conj.coef_var  | number:'1.2-2'}}</td>
+                <td>{{conj.rmse | number:'1.2-2'}}</td>
+                <td>{{conj.coef_var | number:'1.2-2'}}</td>
             </tr>
         </table>
     </div>
